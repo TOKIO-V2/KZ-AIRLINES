@@ -10,17 +10,22 @@ class flightModel extends Model
     use HasFactory;
 
     protected $fillable = [
-        'departure_time', 
+        'date', 
         'origin', 
         'destination', 
         'plane_id', 
-        'is_available'
+        'is_available',
+        'reserved'
     ];
 
     protected $casts = [
-        'departure_time' => 'datetime',
+        'date' => 'date',
         'is_available' => 'boolean',
     ];
+
+    protected $table = 'flight' ;
+
+    protected $factory = 'flightFactory';
 
     public function plane()
     {

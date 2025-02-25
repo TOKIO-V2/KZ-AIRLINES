@@ -1,19 +1,22 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PlaneController;
-use App\Http\Controllers\FlightController;
+use App\Http\Controllers\Api\PlaneController;
+use App\Http\Controllers\Api\FlightController;
 
+    Route::get('/', function () {
+    return view('welcome');
+    });
 
-Route::get('/', [FlightController::class, 'index'])->name('flightsIndex');
-Route::get('/flights/past', [FlightController::class, 'pastFlights'])->name('flightsPast');
-Route::get('/flights/{id}', [FlightController::class, 'show'])->name('flightsShow');
-Route::middleware(['auth', 'role:admin'])->group(function () {
-Route::get('/flights/create', [FlightController::class, 'create'])->name('flightsCreate');
-Route::post('/flights/store', [FlightController::class, 'store'])->name('flightsStore');
-Route::get('/flights/{id}/edit', [FlightController::class, 'edit'])->name('flightsEdit');
-Route::put('/flights/update/{id}', [FlightController::class, 'update'])->name('flightsUpdate');
-Route::delete('/flights/destroy/{id}', [FlightController::class, 'destroy'])->name('flightsDestroy');
+    Route::get('/flights', [FlightController::class, 'index'])->name('flightsIndex');
+    Route::get('/flights/past', [FlightController::class, 'pastFlights'])->name('flightsPast');
+    Route::get('/flights/{id}', [FlightController::class, 'show'])->name('flightsShow');
+    Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/flights/create', [FlightController::class, 'create'])->name('flightsCreate');
+    Route::post('/flights/store', [FlightController::class, 'store'])->name('flightsStore');
+    Route::get('/flights/{id}/edit', [FlightController::class, 'edit'])->name('flightsEdit');
+    Route::put('/flights/update/{id}', [FlightController::class, 'update'])->name('flightsUpdate');
+    Route::delete('/flights/destroy/{id}', [FlightController::class, 'destroy'])->name('flightsDestroy');
 });
 
 

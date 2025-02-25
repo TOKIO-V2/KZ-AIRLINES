@@ -14,6 +14,10 @@ class planeModel extends Model
         'max_capacity'
     ];
 
+    protected $table = 'plane' ;
+
+    protected $factory = 'PlaneFactory';
+
     public function flight()
     {
         return $this->hasMany(flightModel::class);
