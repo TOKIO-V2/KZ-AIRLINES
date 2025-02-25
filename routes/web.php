@@ -4,8 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PlaneController;
 use App\Http\Controllers\FlightController;
 
-Auth::routes();
-
 
 Route::get('/', [FlightController::class, 'index'])->name('flights.index');
 Route::get('/flights/past', [FlightController::class, 'pastFlights'])->name('flights.past');
