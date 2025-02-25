@@ -8,27 +8,44 @@ use Illuminate\Support\Facades\Validator;
 
 class FlightController extends Controller
 {
+    // Mostrar lista de vuelos disponibles
     public function index()
     {
-        $flights = flightModel::with('plane')->get();
-        return response()->json($flights);
+        $flights = flightModel::where('is_available', true)
+            ->where('departure_time', '>', now())
+            ->orderBy('departure_time', 'asc')
+            ->get();
+
+        return view('flights.index', compact('flights'));
     }
 
+    // Mostrar lista de vuelos pasados
+    public function pastFlights()
+    {
+        $flights = flightModel::where('departure_time', '<', now())
+            ->orderBy('departure_time', 'desc')
+            ->get();
+
+        return view('flights.past', compact('flights'));
+    }
+
+    // Mostrar formulario de creación de vuelo
+    public function create()
+    {
+        return view('flights.create');
+    }
+
+    // Guardar un nuevo vuelo
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'departure_time' => 'required|date',
             'origin' => 'required|string|max:255',
             'destination' => 'required|string|max:255',
             'plane_id' => 'required|exists:planes,id',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }
-
-        // Crear el vuelo
-        $flight = flightModel::create([
+        flightModel::create([
             'departure_time' => $request->departure_time,
             'origin' => $request->origin,
             'destination' => $request->destination,
@@ -36,57 +53,41 @@ class FlightController extends Controller
             'is_available' => true,
         ]);
 
-        return response()->json($flight, 201);
+        return redirect()->route('flights.index')->with('success', 'Vuelo creado correctamente.');
     }
-
 
     public function show($id)
     {
-        $flight = flightModel::with('plane')->find($id);
+        $flight = flightModel::findOrFail($id);
+        return view('flights.show', compact('flight'));
+    }
 
-        if (!$flight) {
-            return response()->json(['error' => 'Vuelo no encontrado'], 404);
-        }
-
-        return response()->json($flight);
+    public function edit($id)
+    {
+        $flight = flightModel::findOrFail($id);
+        return view('flights.edit', compact('flight'));
     }
 
     public function update(Request $request, $id)
     {
-        $flight = flightModel::find($id);
-
-        if (!$flight) {
-            return response()->json(['error' => 'Vuelo no encontrado'], 404);
-        }
-
-        // Validar los datos de entrada
-        $validator = Validator::make($request->all(), [
-            'departure_time' => 'sometimes|date',
-            'origin' => 'sometimes|string|max:255',
-            'destination' => 'sometimes|string|max:255',
-            'plane_id' => 'sometimes|exists:planes,id',
-            'is_available' => 'sometimes|boolean',
+        $request->validate([
+            'departure_time' => 'required|date',
+            'origin' => 'required|string|max:255',
+            'destination' => 'required|string|max:255',
+            'plane_id' => 'required|exists:planes,id',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }
-
+        $flight = flightModel::findOrFail($id);
         $flight->update($request->all());
 
-        return response()->json($flight);
+        return redirect()->route('flights.index')->with('success', 'Vuelo actualizado correctamente.');
     }
 
     public function destroy($id)
     {
-        $flight = flightModel::find($id);
-
-        if (!$flight) {
-            return response()->json(['error' => 'Vuelo no encontrado'], 404);
-        }
-
+        $flight = flightModel::findOrFail($id);
         $flight->delete();
 
-        return response()->json(null, 204);
+        return redirect()->route('flights.index')->with('success', 'Vuelo eliminado correctamente.');
     }
 }
