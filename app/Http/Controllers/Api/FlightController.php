@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Validator;
 
 class FlightController extends Controller
 {
-    // Mostrar lista de vuelos disponibles
     public function index()
     {
         $flights = flightModel::where('is_available', true)
@@ -19,7 +18,6 @@ class FlightController extends Controller
         return view('flights.index', compact('flights'));
     }
 
-    // Mostrar lista de vuelos pasados
     public function pastFlights()
     {
         $flights = flightModel::where('departure_time', '<', now())
@@ -29,13 +27,11 @@ class FlightController extends Controller
         return view('flights.past', compact('flights'));
     }
 
-    // Mostrar formulario de creación de vuelo
     public function create()
     {
         return view('flights.create');
     }
-
-    // Guardar un nuevo vuelo
+    
     public function store(Request $request)
     {
         $request->validate([

@@ -6,25 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+
     public function up(): void
     {
         Schema::create('flight', function (Blueprint $table) {
             $table->id();
-            $table->dateTime('departure_time');
+            $table->date('date');
             $table->string('origin');
             $table->string('destination');
             $table->foreignId('plane_id')->constrained("plane");
             $table->boolean('is_available')->default(true);
+            $table->integer('reserved');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('flight');
