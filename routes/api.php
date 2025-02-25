@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\PlaneController;
 use App\Http\Controllers\Api\FlightController;
 
@@ -29,4 +30,15 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/planes/{id}/edit', [PlaneController::class, 'edit'])->name('planesEdit');
     Route::put('/planes/update/{id}', [PlaneController::class, 'update'])->name('planesUpdate');
     Route::delete('/planes/destroy/{id}', [PlaneController::class, 'destroy'])->name('planesDestroy');
+});
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'auth'
+], function ($router) {
+    Route::post('/register', [AuthController::class, 'register'])->name('register');
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api')->name('logout');
+    Route::post('/refresh', [AuthController::class, 'refresh'])->middleware('auth:api')->name('refresh');
+    Route::post('/me', [AuthController::class, 'me'])->middleware('auth:api')->name('me');
 });
