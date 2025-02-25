@@ -19,4 +19,12 @@ Route::delete('/flights/destroy/{id}', [FlightController::class, 'destroy'])->na
 });
 
 
-
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/planes', [PlaneController::class, 'index'])->name('planes.index');
+    Route::get('/planes/create', [PlaneController::class, 'create'])->name('planes.create');
+    Route::post('/planes/store', [PlaneController::class, 'store'])->name('planes.store');
+    Route::get('/planes/{id}', [PlaneController::class, 'show'])->name('planes.show');
+    Route::get('/planes/{id}/edit', [PlaneController::class, 'edit'])->name('planes.edit');
+    Route::put('/planes/update/{id}', [PlaneController::class, 'update'])->name('planes.update');
+    Route::delete('/planes/destroy/{id}', [PlaneController::class, 'destroy'])->name('planes.destroy');
+});
