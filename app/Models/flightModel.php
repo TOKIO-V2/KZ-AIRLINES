@@ -10,19 +10,20 @@ class flightModel extends Model
     use HasFactory;
 
     protected $fillable = [
-        'departure_time', 
+        'date', 
         'origin', 
         'destination', 
         'plane_id', 
-        'is_available'
+        'available_places',
+        'reserved'
     ];
 
     protected $casts = [
-        'departure_time' => 'datetime',
-        'is_available' => 'boolean',
+        'date' => 'datetime',
+        'avaible_places' => 'unsignedInteger',
     ];
 
-    public function plane()
+    public function planes()
     {
         return $this->belongsTo(planeModel::class);
     }
@@ -34,6 +35,6 @@ class flightModel extends Model
 
     public function hasAvailableSeats()
     {
-        return $this->bookings->count() < $this->plane->max_seats;
+        return $this->bookings->count() < $this->planes->max_capacity;
     }
 }

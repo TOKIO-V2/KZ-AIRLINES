@@ -2,88 +2,76 @@
 
 namespace App\Http\Controllers;
 
+use DateTime;
+use App\Models\planeModel;
 use App\Models\flightModel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class FlightController extends Controller
 {
     public function index()
     {
-        $flights = flightModel::where('is_available', true)
-            ->where('departure_time', '>', now())
-            ->orderBy('departure_time', 'asc')
-            ->get();
-
-        return view('flights.index', compact('flights'));
+        return (response()->json(flightModel::All(), 200));
     }
 
-    public function pastFlights()
+    public function show(string $id)
     {
-        $flights = flightModel::where('departure_time', '<', now())
-            ->orderBy('departure_time', 'desc')
-            ->get();
-
-        return view('flights.past', compact('flights'));
+        return (response()->json(flightModel::find($id), 200));
     }
 
-    public function create()
-    {
-        return view('flights.create');
-    }
-    
     public function store(Request $request)
     {
-        $request->validate([
-            'departure_time' => 'required|date',
-            'origin' => 'required|string|max:255',
-            'destination' => 'required|string|max:255',
-            'plane_id' => 'required|exists:planes,id',
+        $airplane = planeModel::find($request->airplaneId);
+        $places = $request->availablePlaces;
+        $status = $request->status;
+
+        if ($request->availablePlaces > $airplane->max_places)
+        {
+            $places = $airplane->max_places;
+        }
+        if (new DateTime($request->date) < now())
+        {
+            $status = 0;
+        }
+        $flight = flightModel::create([
+            "date" => $request->date,
+            "departure" => $request->departure,
+            "arrival" => $request->arrival,
+            "image" => $request->image,
+            "plane_id" => $request->planeId,
+            "available_places" => $places,
+            "status" => $status
         ]);
+        return (response()->json($flight, 200));
+    }
 
-        flightModel::create([
-            'departure_time' => $request->departure_time,
-            'origin' => $request->origin,
-            'destination' => $request->destination,
-            'plane_id' => $request->plane_id,
-            'is_available' => true,
+    public function update(Request $request, string $id)
+    {
+        $flight = flightModel::find($id);
+        $places = $request->availablePlaces;
+
+        if ($request->availablePlaces > $flight->airplane->max_places)
+        {
+            $places = $flight->airplane->max_places;
+        }
+        if (new DateTime($request->date) < now())
+        {
+            $status = 0;
+        }
+        $flight->update([
+            "date" => $request->date,
+            "origin" => $request->origin,
+            "destination" => $request->destination,
+            "plane_id" => $request->planeId,
+            "available_places" => $places,
+            "reserved" => $request->reserved
         ]);
-
-        return redirect()->route('flights.index')->with('success', 'Vuelo creado correctamente.');
+        return (response()->json($flight, 200));
     }
 
-    public function show($id)
+    public function destroy(string $id)
     {
-        $flight = flightModel::findOrFail($id);
-        return view('flights.show', compact('flight'));
-    }
-
-    public function edit($id)
-    {
-        $flight = flightModel::findOrFail($id);
-        return view('flights.edit', compact('flight'));
-    }
-
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'departure_time' => 'required|date',
-            'origin' => 'required|string|max:255',
-            'destination' => 'required|string|max:255',
-            'plane_id' => 'required|exists:planes,id',
-        ]);
-
-        $flight = flightModel::findOrFail($id);
-        $flight->update($request->all());
-
-        return redirect()->route('flights.index')->with('success', 'Vuelo actualizado correctamente.');
-    }
-
-    public function destroy($id)
-    {
-        $flight = flightModel::findOrFail($id);
-        $flight->delete();
-
-        return redirect()->route('flights.index')->with('success', 'Vuelo eliminado correctamente.');
+        flightModel::find($id)->delete();
     }
 }

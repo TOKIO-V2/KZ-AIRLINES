@@ -9,13 +9,13 @@ return new class extends Migration
 
     public function up(): void
     {
-        Schema::create('flight', function (Blueprint $table) {
+        Schema::create('flights', function (Blueprint $table) {
             $table->id();
             $table->date('date');
             $table->string('origin');
             $table->string('destination');
             $table->foreignId('plane_id')->constrained("plane");
-            $table->boolean('is_available')->default(true);
+            $table->unsignedInteger("available_places");
             $table->integer('reserved');
             $table->timestamps();
         });
@@ -23,6 +23,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('flight');
+        Schema::dropIfExists('flights');
     }
 };
