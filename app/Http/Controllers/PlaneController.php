@@ -5,74 +5,100 @@ namespace App\Http\Controllers;
 use App\Models\planeModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
 
-class AirplaneController extends Controller
+class PlaneController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
+    {
+        if ($request->action === 'delete') {
+            $this->destroy($request->id);
+            return redirect()->route('planes');
+        }
+
+        $planes = planeModel::All();
+
+        return view('planes.planes', compact('planes'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        if( Auth::user()->Admin=true){
+
+            return view('planes.createPlaneForm');
+
+        }
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
-        $airplane = planeModel::create([
-            "name" => $request->name,
-            "max_capacity" => $request->max_capacity
+        $plane = planeModel::create([
+            'name' => $request->name,
+            'max_capacity' => $request->max_capacity,
         ]);
+        $plane->save();
 
-        return ($airplane);
+        return redirect()->route('planes');
     }
 
-    public function create(Request $request)
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
     {
-        if ($request->method() === "POST")
-        {
-            $this->store($request);
-            return (Redirect::to(route("planes")));
-        }
-        return (view("admin.airplanes.airplanesCreate"));
+        $plane = planeModel::findOrFail($id);
+        return view('planes.planeShow', compact('plane'));
     }
 
-    public function update(Request $request, planeModel $plane)
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
     {
-        $plane->update([
-            "name" => $request->name,
-            "max_capacity" => $request->max_capacity
-        ]);
-        foreach ($plane->flights as $flight)
-        {
-            if ($flight->available_places > $plane->max_capacity)
-            {
-                $flight->update([
-                    "available_places" => $plane->max_capacity
-                ]);
-            }
+        if( Auth::user()->Admin=true){
+
+            $plane = planeModel::find($id);
+            return view('planes.editPlaneForm', compact('plane'));
         }
-        return ($plane);
+        
     }
 
-    public function edit(Request $request, string $id)
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
     {
         $plane = planeModel::find($id);
 
-        if ($request->method() === "POST")
-        {
-            $this->update($request, $plane);
-            return (Redirect::to(route("planes")));
-        }
-        return (view("admin.airplanes.airplanesEdit", compact("airplane")));
+        $plane->update([
+            'name' => $request->name,
+            'max_capacity' => $request->max_capacity,
+        ]);
+
+        $plane->save();
+        return redirect()->route('planes');
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy(string $id)
     {
-        planeModel::find($id)->delete();
+        if( Auth::user()->Admin=true){
+
+            $plane = planeModel::find($id);
+            $plane->delete();
+
+        }
     }
 
-    public function index(Request $request)
-    {
-        $planes = planeModel::all();
-        
-        if ($request->action == "delete")
-        {
-            $this->destroy($request->id);
-            return (Redirect::to(route("planes")));
-        }
-        return (view("admin.airplanes.airplanes", compact("airplanes")));
-    }
+    
 }

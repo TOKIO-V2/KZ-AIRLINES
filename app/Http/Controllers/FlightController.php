@@ -3,151 +3,204 @@
 namespace App\Http\Controllers;
 
 use App\Models\flightModel;
-use App\Models\planeModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 
 class FlightController extends Controller
 {
-    public function index()
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
     {
-        $flights = flightModel::where("reserved", "1")
-                            ->where("date", ">=", now())
-                            ->orderBy("date", "asc")->get();
+        if ($request->action === 'delete') {
+            $this->destroy($request->id);
+            return redirect()->route('flights');
+        }
 
-        return (view("index", compact("flights")));
+        $flights = flightModel::where('date', '>=', now())->orderBy('date', 'desc')->get();
+
+        return view('flights.flights', compact('flights'));
     }
 
-    public function search(Request $request)
+    public function pastFlights(Request $request)
     {
-        $origin = '%'.$request->origin.'%';
-        $destination = '%'.$request->destination.'%';
-        $date = '%'.$request->date.'%';
-
-        if (!$request->origin && !$request->destination && !$request->date)
-        {
-            return Redirect::to(route("index"));
+        if ($request->action === 'delete') {
+            $this->destroy($request->id);
+            return redirect()->route('pastFlights');
         }
-        $flights = flightModel::where("origin", "like", $origin)
-                            ->where("destination", "like", $destination)
-                            ->where("date", "like", $date)->get();
 
-        return (view("search", compact("flights")));
+        $pastFlights = flightModel::where('date', '<', now())->orderBy('date', 'desc')->get();
+
+        foreach($pastFlights as $flight){
+            $flight->update(
+                [
+                    "reserved" => $flight->plane->max_capacity 
+                ]
+            );
+        }
+
+        return view('flights.pastFlights', compact('pastFlights'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        if( Auth::user()->Admin=true){
+
+            return view('flights.createFlightForm');
+
+        }
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $flights = flightModel::create([
+            'date' => $request->date,
+            'origin' => $request->origin,
+            'destination' => $request->destination,
+            'plane_id' => $request->plane_id,
+            'reserved' => $request->reserved,
+            'available' => 1
+        ]);
+        $flights->save();
+
+        return redirect()->route('flights');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Request $request, string $id)
+    {
+        $flights = flightModel::find($id);
+        $booked = count($flights->users()->where("user_id", Auth::id())->get());
+
+        if ($request->action === "book" && !$booked)
+        {
+            $this->book($flights, Auth::id());
+            return (Redirect::to(route("flightShow", $flights->id)));
+        }
+        if ($request->action == "unbook" && $booked)
+        {
+            $this->unbook($flights, Auth::id());
+            return (Redirect::to(route("flightShow", $flights->id)));
+        }
+        return (view("flights.flightShow", compact("flights", "booked")));
+        
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        
+        if( Auth::user()->Admin=true){
+
+            $flights = flightModel::find($id);
+            return view('flights.editFlightForm', compact('flights'));
+        }
+        
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        $flights = flightModel::find($id);
+
+        $flights->update([
+            'date' => $request->date,
+            'origin' => $request->origin,
+            'destination' => $request->destination,
+            'plane_id' => $request->plane_id,
+            'reserved' => $request->reserved,
+            'available'=>$flights->available
+        ]);
+
+        $flights->save();
+        return redirect()->route('flights');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        if( Auth::user()->Admin=true){
+
+            $flights = flightModel::find($id);
+            $flights->delete();
+
+        }
     }
 
     public function book(flightModel $flight, int $userId)
     {
-        if ($flight->available_places === 0 || $flight->reserved === false || $flight->date < now())
+        if ($flight->reserved == $flight->plane->max_capacity)
         {
-            return (Redirect::to(route("show", $flight->id)));
-        } 
+            return;
+        }
         $flight->users()->attach($userId);
-        $flight->update([
-            "available_places" => $flight->available_places - 1
-        ]);
+        $flight->update(
+            [
+                "reserved" => $flight->reserved + 1
+            ]
+        );
+        if ($flight->reserved == $flight->plane->max_capacity && !$flight->available)
+        {
+            $flight->update(
+                [
+                    "available" => 1
+                ]
+            );
+        }
     }
 
-    public function debook(flightModel $flight, int $userId)
+    public function unbook(flightModel $flight, int $userId)
     {
-        if ($flight->available_places === $flight->airplane->max_places 
-            || $flight->reserved === false || $flight->date < now())
-        {
-            return (Redirect::to(route("show", $flight->id)));
-        } 
+        if ($flight->reserved == 0) {
+            return;
+        }
+
         $flight->users()->detach($userId);
-        $flight->update([
-            "available_places" => $flight->available_places + 1
-        ]);
-    }
-
-    public function show(Request $request, string $id)
-    {
-        $flight = flightModel::find($id);
-        $isBooked = count($flight->users()->where("user_id", Auth::id())->get());
-
-        if ($request->action === "book" && !$isBooked)
-        {
-            $this->book($flight, Auth::id());
-            return (Redirect::to(route("show", $flight->id)));
-        }
-        if ($request->action == "debook" && $isBooked)
-        {
-            $this->debook($flight, Auth::id());
-            return (Redirect::to(route("show", $flight->id)));
-        }
-        return (view("show", compact("flight", "isBooked")));
-    }
-
-    public function store(Request $request)
-    {
-        $airplane = planeModel::find($request->airplane);
-        $flight = flightModel::create([
-            "date" => $request->date,
-            "origin" => $request->origin,
-            "destination" => $request->destination,
-            "plane_id" => $airplane->id,
-            "available_places" => $airplane->max_capacity,
-            "reserved" => $request->reserved
-        ]);
-
-        return ($flight);
-    }
-
-    public function create(Request $request)
-    {
-        $planes = planeModel::all();
-
-        if ($request->method() === "POST")
-        {
-            $this->store($request);
-            return (Redirect::to(route("flights")));
-        }
-        return (view("admin.flights.flightsCreate", compact("airplanes")));
-    }
-
-    public function update(Request $request, flightModel $flight)
-    {
-        $plane = planeModel::find($request->airplane);
 
         $flight->update([
-            "date" => $request->date,
-            "origin" => $request->origin,
-            "destination" => $request->destination,
-            "plane_id" => $plane->id,
-            "available_places" => $plane->max_capacity,
-            "reserved" => $request->reserved
+            "reserved" => $flight->reserved - 1
         ]);
-        return ($flight);
-    }
 
-    public function edit(Request $request, string $id)
-    {
-        $flight = flightModel::find($id);
-        $airplanes = planeModel::all();
-
-        if ($request->method() === "POST")
-        {
-            $this->update($request, $flight);
-            return (Redirect::to(route("flights")));
+        if ($flight->available) {
+            $flight->update([
+                "available" => 1
+            ]);
         }
-        return (view("admin.flights.flightsEdit", compact("flight", "airplanes")));
     }
 
-    public function destroy(string $id)
+    public function getReservations($id)
     {
-        flightModel::find($id)->delete();
-    }
-
-    public function flights(Request $request)
-    {
-        $flights = flightModel::all();
-
-        if ($request->action == "delete")
-        {
-            $this->destroy($request->id);
-            return (Redirect::to("flights"));
+        
+        if (!Auth::check() || !Auth::user()->Admin) {
+            abort(403, 'No autorizado');
         }
-        return (view("admin.flights.flights", compact("flights")));
+
+        $flight = flightModel::with('users')->findOrFail($id);
+
+        $reservations = $flight->users->map(function($user) {
+            return [
+                'user_id'   => $user->id,
+                'user_name' => $user->name,
+                'user_email'=> $user->email,
+            ];
+        });
+
+        return response()->json($reservations);
     }
 }
