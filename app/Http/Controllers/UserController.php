@@ -13,7 +13,7 @@ class UserController extends Controller
         $flight = $user->flights()->where("plane_id", $id)->first();
     
         if ($flight->available_places === $flight->airplane->max_capacity
-            || $flight->status === false || $flight->date < now())
+            || $flight->reserved === false || $flight->date < now())
         {
             return (Redirect::to(route("show", $flight->id)));
         }

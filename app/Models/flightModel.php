@@ -9,6 +9,8 @@ class flightModel extends Model
 {
     use HasFactory;
 
+    protected $table = 'flights';
+
     protected $fillable = [
         'date', 
         'origin', 
@@ -20,7 +22,7 @@ class flightModel extends Model
 
     protected $casts = [
         'date' => 'datetime',
-        'avaible_places' => 'unsignedInteger',
+        'available_places' => 'unsignedInteger',
     ];
 
     public function planes()
@@ -35,6 +37,6 @@ class flightModel extends Model
 
     public function hasAvailableSeats()
     {
-        return $this->bookings->count() < $this->planes->max_capacity;
+        return $this->bookings->count() < $this->plane->max_capacity;
     }
 }

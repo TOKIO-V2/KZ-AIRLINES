@@ -24,7 +24,7 @@ class FlightController extends Controller
     {
         $airplane = planeModel::find($request->airplaneId);
         $places = $request->availablePlaces;
-        $status = $request->status;
+        $reserved = $request->reserved;
 
         if ($request->availablePlaces > $airplane->max_places)
         {
@@ -36,12 +36,11 @@ class FlightController extends Controller
         }
         $flight = flightModel::create([
             "date" => $request->date,
-            "departure" => $request->departure,
-            "arrival" => $request->arrival,
-            "image" => $request->image,
+            "origin" => $request->origin,
+            "destination" => $request->destination,
             "plane_id" => $request->planeId,
             "available_places" => $places,
-            "status" => $status
+            "reserved" => $request->reserved
         ]);
         return (response()->json($flight, 200));
     }

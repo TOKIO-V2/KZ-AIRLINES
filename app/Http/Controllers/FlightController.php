@@ -12,7 +12,7 @@ class FlightController extends Controller
 {
     public function index()
     {
-        $flights = flightModel::where("status", "1")
+        $flights = flightModel::where("reserved", "1")
                             ->where("date", ">=", now())
                             ->orderBy("date", "asc")->get();
 
@@ -21,16 +21,16 @@ class FlightController extends Controller
 
     public function search(Request $request)
     {
-        $departure = '%'.$request->departure.'%';
-        $arrival = '%'.$request->arrival.'%';
+        $origin = '%'.$request->origin.'%';
+        $destination = '%'.$request->destination.'%';
         $date = '%'.$request->date.'%';
 
-        if (!$request->departure && !$request->arrival && !$request->date)
+        if (!$request->origin && !$request->destination && !$request->date)
         {
             return Redirect::to(route("index"));
         }
-        $flights = flightModel::where("departure", "like", $departure)
-                            ->where("arrival", "like", $arrival)
+        $flights = flightModel::where("origin", "like", $origin)
+                            ->where("destination", "like", $destination)
                             ->where("date", "like", $date)->get();
 
         return (view("search", compact("flights")));
@@ -38,7 +38,7 @@ class FlightController extends Controller
 
     public function book(flightModel $flight, int $userId)
     {
-        if ($flight->available_places === 0 || $flight->status === false || $flight->date < now())
+        if ($flight->available_places === 0 || $flight->reserved === false || $flight->date < now())
         {
             return (Redirect::to(route("show", $flight->id)));
         } 
@@ -51,7 +51,7 @@ class FlightController extends Controller
     public function debook(flightModel $flight, int $userId)
     {
         if ($flight->available_places === $flight->airplane->max_places 
-            || $flight->status === false || $flight->date < now())
+            || $flight->reserved === false || $flight->date < now())
         {
             return (Redirect::to(route("show", $flight->id)));
         } 
@@ -96,7 +96,7 @@ class FlightController extends Controller
 
     public function create(Request $request)
     {
-        $airplanes = planeModel::all();
+        $planes = planeModel::all();
 
         if ($request->method() === "POST")
         {
@@ -108,14 +108,14 @@ class FlightController extends Controller
 
     public function update(Request $request, flightModel $flight)
     {
-        $airplane = planeModel::find($request->airplane);
+        $plane = planeModel::find($request->airplane);
 
         $flight->update([
             "date" => $request->date,
             "origin" => $request->origin,
             "destination" => $request->destination,
-            "plane_id" => $airplane->id,
-            "available_places" => $airplane->max_capacity,
+            "plane_id" => $plane->id,
+            "available_places" => $plane->max_capacity,
             "reserved" => $request->reserved
         ]);
         return ($flight);
