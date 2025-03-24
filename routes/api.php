@@ -1,11 +1,10 @@
 <?php
 
+use App\Http\Controllers\Api\FlightController;
+use App\Http\Controllers\Api\PlaneController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Api\FlightController;
-use App\Http\Controllers\Api\PlaneController;
-use App\Http\Middleware\Admin;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -22,14 +21,16 @@ Route::group([
     Route::post('/me', [AuthController::class, 'me'])->middleware('auth:api')->name('me');
 });
 
-Route::post("/planes", [PlaneController::class, "store"])->middleware(['auth:api', Admin::class.":api"])->name("apiairplanestore");
-Route::get("/planes", [PlaneController::class, "index"])->middleware('auth:api')->name("apiairplaneindex");
-Route::get("/planes/{id}", [PlaneController::class, "show"])->middleware('auth:api')->name("apiairplaneshow");
-Route::put("/planes/{id}", [PlaneController::class, "update"])->middleware(['auth:api', Admin::class.":api"])->name("apiplaneupdate");
-Route::delete("/planes/{id}", [PlaneController::class, "destroy"])->middleware(['auth:api', Admin::class.":api"])->name("apiplanedestroy");
+//Flights routes
+Route::get('/flights',[FlightController::class,'index'])->name('apiflightall');
+Route::get('/flights/show/{id}',[FlightController::class, 'show'])->name('apiflightshow');
+Route::delete('/flights/destroy/{id}',[FlightController::class, 'destroy'])->name('apiflightdestroy');
+Route::post('/flights/store',[FlightController::class, 'store'])->name('apiflightstore');
+Route::put('/flights/update/{id}',[FlightController::class, 'update'])->name('apiflightupdate');
 
-Route::post("/flights", [FlightController::class, "store"])->middleware(['auth:api', Admin::class.":api"])->name("flightstore");
-Route::get("/flights", [FlightController::class, "index"])->middleware('auth:api')->name("apiflightindex");
-Route::get("/flights/{id}", [FlightController::class, "show"])->middleware('auth:api')->name("apiflightshow");
-Route::put("/flights/{id}", [FlightController::class, "update"])->middleware(['auth:api', Admin::class.":api"])->name("flightupdate");
-Route::delete("/flights/{id}", [FlightController::class, "destroy"])->middleware(['auth:api', Admin::class.":api"])->name("flightdestroy");
+//Planes routes
+Route::get('/planes',[PlaneController::class,'index'])->name('apiplaneall');
+Route::get('/planes/show/{id}',[PlaneController::class, 'show'])->name('apiplaneshow');
+Route::delete('/planes/destroy/{id}',[PlaneController::class, 'destroy'])->name('apiplanedestroy');
+Route::post('/planes/store',[PlaneController::class, 'store'])->name('apiplanestore');
+Route::put('/planes/update/{id}',[PlaneController::class, 'update'])->name('apiplaneupdate');

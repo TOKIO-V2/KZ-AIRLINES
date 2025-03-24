@@ -1,31 +1,30 @@
 <?php
 
-use App\Http\Middleware\Admin;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Middleware\BookingAllowed;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PlaneController;
 use App\Http\Controllers\FlightController;
-use App\Http\Controllers\AirplaneController;
-
-Route::get('/', [FlightController::class, "index"])->name("index");
-Route::get('/search', [FlightController::class, "search"])->name("search");
-Route::get("/flight/{id}", [FlightController::class, "show"])->name("show")->middleware(BookingAllowed::class.":index");
 
 Auth::routes();
 
-Route::get("/flights", [FlightController::class, "flights"])->middleware("auth", Admin::class.":web")->name("flights");
-Route::get("/flights/create", [FlightController::class, "create"])->middleware("auth", Admin::class.":web")->name("flightsCreate");
-Route::post("/flights/create", [FlightController::class, "create"])->middleware("auth", Admin::class.":web")->name("flightsCreate");
-Route::get("/flights/{id}/edit", [FlightController::class, "edit"])->middleware("auth", Admin::class.":web")->name("flightsEdit");
-Route::post("/flights/{id}/edit", [FlightController::class, "edit"])->middleware("auth", Admin::class.":web")->name("flightsEdit");
+Route::get('/flights/myFlights',[UserController::class, 'index'])->middleware('role:user')->name('userFlights');
 
-Route::get("/users", [UserController::class, "users"])->middleware("auth", Admin::class.":web")->name("users");
-Route::get("/user/bookings", [UserController::class, "bookings"])->middleware(BookingAllowed::class.":index")->name("userBookings");
 
-Route::get("/planes", [AirplaneController::class, "index"])->middleware("auth", Admin::class.":web")->name("planes");
-Route::get("/planes/create", [AirplaneController::class, "create"])->middleware("auth", Admin::class.":web")->name("planesCreate");
-Route::post("/planes/create", [AirplaneController::class, "create"])->middleware("auth", Admin::class.":web")->name("planesCreate");
-Route::get("/planes/{id}/edit", [AirplaneController::class, "edit"])->middleware("auth", Admin::class.":web")->name("planesEdit");
-Route::post("/planes/{id}/edit", [AirplaneController::class, "edit"])->middleware("auth", Admin::class.":web")->name("planesEdit");
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->middleware("auth", Admin::class.":web")->name('home');
+Route::get('/', [FlightController::class, 'index'])->name('flights');
+Route::get('/flights/past', [FlightController::class, 'pastFlights'])->name('pastFlights');
+Route::get('/flights/create', [FlightController::class, 'create'])->middleware('role:admin')->name('createFlightForm');
+Route::post('/flights/store', [FlightController::class, 'store'])->middleware('role:admin')->name('flightStore');
+Route::get('/flights/{id}', [FlightController::class, 'edit'])->middleware('role:admin')->name('editFlightForm');
+Route::post('/flights/update/{id}', [FlightController::class, 'update'])->middleware('role:admin')->name('flightUpdate');
+Route::delete('/flights/destroy/{id}', [FlightController::class, 'destroy'])->middleware('role:admin')->name('flightDestroy');
+Route::get('/flights/show/{id}',[FlightController::class, 'show'])->name('flightShow');
+Route::get('/flights/{id}/reservations', [FlightController::class, 'getReservations'])->middleware('role:admin');
+
+
+Route::get('/planes', [PlaneController::class, 'index'])->middleware('role:admin')->name('planes');
+Route::get('/planes/create', [PlaneController::class, 'create'])->middleware('role:admin')->name('createPlaneForm');
+Route::post('/planes/store', [PlaneController::class, 'store'])->middleware('role:admin')->name('planeStore');
+Route::get('/planes/{id}', [PlaneController::class, 'edit'])->middleware('role:admin')->name('editPlaneForm');
+Route::post('/planes/update/{id}', [PlaneController::class, 'update'])->middleware('role:admin')->name('planeUpdate');
+Route::delete('/planes/destroy/{id}', [PlaneController::class, 'destroy'])->middleware('role:admin')->name('planeDestroy');
+Route::get('/planes/show/{id}',[PlaneController::class, 'show'])->middleware('role:admin')->name('planeShow');
