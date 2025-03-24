@@ -14,7 +14,7 @@ return new class extends Migration
             $table->date('date');
             $table->string('origin');
             $table->string('destination');
-            $table->foreignId('plane_id')->constrained("plane");
+            $table->foreignId('plane_id')->constrained("planes")->onDelete('cascade');
             $table->unsignedInteger("available_places");
             $table->integer('reserved');
             $table->timestamps();
