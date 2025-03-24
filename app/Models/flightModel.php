@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class flightModel extends Model
 {
@@ -17,7 +19,8 @@ class flightModel extends Model
         'destination', 
         'plane_id', 
         'available_places',
-        'reserved'
+        'reserved',
+        'available'
     ];
 
     protected $casts = [
@@ -25,18 +28,14 @@ class flightModel extends Model
         'available_places' => 'unsignedInteger',
     ];
 
-    public function planes()
+   
+    public function plane(): BelongsTo
     {
         return $this->belongsTo(planeModel::class);
     }
 
-    public function bookings()
+    public function users(): BelongsToMany
     {
-        return $this->hasMany(bookingModel::class);
-    }
-
-    public function hasAvailableSeats()
-    {
-        return $this->bookings->count() < $this->plane->max_capacity;
+        return $this->belongsToMany(User::class, "flight_user");
     }
 }
