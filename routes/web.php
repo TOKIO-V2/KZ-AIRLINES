@@ -1,28 +1,31 @@
 <?php
 
+use App\Http\Middleware\Admin;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PlaneController;
+use App\Http\Middleware\BookingAllowed;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\FlightController;
+use App\Http\Controllers\AirplaneController;
 
+Route::get('/', [FlightController::class, "index"])->name("index");
+Route::get('/search', [FlightController::class, "search"])->name("search");
+Route::get("/flight/{id}", [FlightController::class, "show"])->name("show")->middleware(BookingAllowed::class.":index");
 
-Route::get('/', [FlightController::class, 'index'])->name('flightsIndex');
-Route::get('/flights/past', [FlightController::class, 'pastFlights'])->name('flightsPast');
-Route::get('/flights/{id}', [FlightController::class, 'show'])->name('flightsShow');
-Route::middleware(['auth', 'role:admin'])->group(function () {
-Route::get('/flights/create', [FlightController::class, 'create'])->name('flightsCreate');
-Route::post('/flights/store', [FlightController::class, 'store'])->name('flightsStore');
-Route::get('/flights/{id}/edit', [FlightController::class, 'edit'])->name('flightsEdit');
-Route::put('/flights/update/{id}', [FlightController::class, 'update'])->name('flightsUpdate');
-Route::delete('/flights/destroy/{id}', [FlightController::class, 'destroy'])->name('flightsDestroy');
-});
+Auth::routes();
 
+Route::get("/flights", [FlightController::class, "flights"])->middleware("auth", Admin::class.":web")->name("flights");
+Route::get("/flights/create", [FlightController::class, "create"])->middleware("auth", Admin::class.":web")->name("flightsCreate");
+Route::post("/flights/create", [FlightController::class, "create"])->middleware("auth", Admin::class.":web")->name("flightsCreate");
+Route::get("/flights/{id}/edit", [FlightController::class, "edit"])->middleware("auth", Admin::class.":web")->name("flightsEdit");
+Route::post("/flights/{id}/edit", [FlightController::class, "edit"])->middleware("auth", Admin::class.":web")->name("flightsEdit");
 
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/planes', [PlaneController::class, 'index'])->name('planesIndex');
-    Route::get('/planes/create', [PlaneController::class, 'create'])->name('planesCreate');
-    Route::post('/planes/store', [PlaneController::class, 'store'])->name('planesStore');
-    Route::get('/planes/{id}', [PlaneController::class, 'show'])->name('planesShow');
-    Route::get('/planes/{id}/edit', [PlaneController::class, 'edit'])->name('planesEdit');
-    Route::put('/planes/update/{id}', [PlaneController::class, 'update'])->name('planesUpdate');
-    Route::delete('/planes/destroy/{id}', [PlaneController::class, 'destroy'])->name('planesDestroy');
-});
+Route::get("/users", [UserController::class, "users"])->middleware("auth", Admin::class.":web")->name("users");
+Route::get("/user/bookings", [UserController::class, "bookings"])->middleware(BookingAllowed::class.":index")->name("userBookings");
+
+Route::get("/planes", [AirplaneController::class, "index"])->middleware("auth", Admin::class.":web")->name("planes");
+Route::get("/planes/create", [AirplaneController::class, "create"])->middleware("auth", Admin::class.":web")->name("planesCreate");
+Route::post("/planes/create", [AirplaneController::class, "create"])->middleware("auth", Admin::class.":web")->name("planesCreate");
+Route::get("/planes/{id}/edit", [AirplaneController::class, "edit"])->middleware("auth", Admin::class.":web")->name("planesEdit");
+Route::post("/planes/{id}/edit", [AirplaneController::class, "edit"])->middleware("auth", Admin::class.":web")->name("planesEdit");
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->middleware("auth", Admin::class.":web")->name('home');
