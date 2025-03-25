@@ -12,12 +12,12 @@ class PlaneTest extends TestCase
 
     public function test_it_can_create_a_plane()
     {
-        $plane = planeModel::create([
+        $planes = planeModel::create([
             'name' => 'Boeing 737',
             'max_capacity' => 160,
         ]);
 
-        $this->assertDatabaseHas('plane', [
+        $this->assertDatabaseHas('planes', [
             'name' => 'Boeing 737',
             'max_capacity' => 160,
         ]);
@@ -25,14 +25,14 @@ class PlaneTest extends TestCase
 
     public function test_it_can_update_a_plane()
     {
-        $plane = planeModel::create([
+        $planes = planeModel::create([
             'name' => 'Boeing 737',
             'max_capacity' => 160,
         ]);
 
-        $plane->update(['max_capacity' => 160]);
+        $planes->update(['max_capacity' => 160]);
 
-        $this->assertDatabaseHas('plane', [
+        $this->assertDatabaseHas('planes', [
             'name' => 'Boeing 737',
             'max_capacity' => 160,
         ]);
@@ -40,14 +40,14 @@ class PlaneTest extends TestCase
 
     public function test_it_can_delete_a_plane()
     {
-        $plane = planeModel::create([
+        $planes = planeModel::create([
             'name' => 'Boeing 737',
             'max_capacity' => 160,
         ]);
 
-        $plane->delete();
+        $planes->delete();
 
-        $this->assertDatabaseMissing('plane', [
+        $this->assertDatabaseMissing('planes', [
             'name' => 'Boeing 737',
         ]);
     }
