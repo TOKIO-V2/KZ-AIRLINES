@@ -1,16 +1,13 @@
 <?php
-  
+
 namespace App\Http\Controllers;
-  
+
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
-use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use Validator;
 
 class AuthController extends Controller
 {
- 
     /**
      * Register a User.
      *
@@ -20,8 +17,7 @@ class AuthController extends Controller
         $validator = Validator::make(request()->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:8',
-            'role' => 'nullable|in:admin,user',
+            'password' => 'required|confirmed|min:8',
         ]);
   
         if($validator->fails()){
@@ -32,7 +28,6 @@ class AuthController extends Controller
         $user->name = request()->name;
         $user->email = request()->email;
         $user->password = bcrypt(request()->password);
-        $user->role = request()->role ? request()->role : 'user';
         $user->save();
   
         return response()->json($user, 201);
@@ -47,8 +42,8 @@ class AuthController extends Controller
     public function login()
     {
         $credentials = request(['email', 'password']);
-  
-        if (! $token = JWTAuth::attempt($credentials)) {
+        
+        if (! $token = auth("api")->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
   
@@ -62,7 +57,7 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(JWTAuth::user());
+        return response()->json(auth("api")->user());
     }
   
     /**
@@ -70,9 +65,9 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function logout(Request $request)
+    public function logout()
     {
-        JWTAuth::invalidate(JWTAuth::getToken());
+        auth("api")->logout();
   
         return response()->json(['message' => 'Successfully logged out']);
     }
@@ -84,7 +79,7 @@ class AuthController extends Controller
      */
     public function refresh()
     {
-        return $this->respondWithToken(JWTAuth::refresh(JWTAuth::getToken()));
+        return $this->respondWithToken(auth("api")->refresh());
     }
   
     /**
@@ -99,7 +94,7 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => JWTAuth::factory()->getTTL() * 60
+            'expires_in' => auth("api")->factory()->getTTL() * 60
         ]);
     }
 }

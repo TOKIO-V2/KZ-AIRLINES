@@ -3,42 +3,39 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class flightModel extends Model
 {
     use HasFactory;
+
+    protected $table = 'flights';
 
     protected $fillable = [
         'date', 
         'origin', 
         'destination', 
         'plane_id', 
-        'is_available',
-        'reserved'
+        'available_places',
+        'reserved',
+        'available'
     ];
 
     protected $casts = [
-        'date' => 'date',
-        'is_available' => 'boolean',
+        'date' => 'datetime',
+        'available_places' => 'unsignedInteger',
     ];
 
-    protected $table = 'flight' ;
-
-    protected $factory = 'flightFactory';
-
-    public function plane()
+   
+    public function plane(): BelongsTo
     {
         return $this->belongsTo(planeModel::class);
     }
 
-    public function bookings()
+    public function users(): BelongsToMany
     {
-        return $this->hasMany(bookingModel::class);
-    }
-
-    public function hasAvailableSeats()
-    {
-        return $this->bookings->count() < $this->plane->max_seats;
+        return $this->belongsToMany(User::class, "flight_user");
     }
 }

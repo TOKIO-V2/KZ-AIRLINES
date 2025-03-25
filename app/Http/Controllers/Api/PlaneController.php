@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\planeModel;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -10,33 +11,46 @@ class PlaneController extends Controller
 {
     public function index()
     {
-        return planeModel::all();
+        $planes = planeModel::all();
+
+        return response()->json($planes, 200);
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'max_capacity' => 'required|integer',
+        $plane = planeModel::create([
+            'name' => $request->name,
+            'max_capacity' => $request->max_capacity
         ]);
 
-        return planeModel::create($request->all());
+        $plane->save();
+
+        return response()->json($plane, 200);
+    }
+    public function show(string $id)
+    {
+        $plane = planeModel::findOrFail($id);
+
+        return response()->json($plane, 200);
     }
 
-    public function show(planeModel $plane)
+    public function update(Request $request, string $id)
     {
-        return $plane;
+        $plane = planeModel::findOrFail($id);
+
+        $plane->update([
+            'name' => $request->name,
+            'max_capacity' => $request->max_capacity
+        ]);
+        
+        $plane->save();
+
+        return response()->json($plane, 200);
     }
 
-    public function update(Request $request, planeModel $plane)
+    public function destroy(string $id)
     {
-        $plane->update($request->all());
-        return $plane;
-    }
-
-    public function destroy(planeModel $plane)
-    {
+        $plane = planeModel::findOrFail($id);
         $plane->delete();
-        return response()->noContent();
     }
 }
