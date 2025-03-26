@@ -15,14 +15,14 @@ class bookingModel extends Model
     ];
 
     // Relación con el usuario (una reserva pertenece a un usuario)
-    public function user()
+    /* public function user()
     {
         return $this->belongsTo(User::class);
-    }
+    } */
 
     // Relación con el vuelo (una reserva pertenece a un vuelo)
-    public function flight()
+    /* public function flight()
     {
         return $this->belongsTo(Flight::class);
-    }
+    } */
 }

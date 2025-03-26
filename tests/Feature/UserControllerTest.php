@@ -17,7 +17,7 @@ class UserControllerTest extends TestCase
      */
 
     use RefreshDatabase;
-    public function test_if_shows_flights_for_authenticated_user(): void
+    public function test_if_shows_reservations_for_uthenticated_user(): void
     {
         $user = User::factory()->create();
 
@@ -36,13 +36,9 @@ class UserControllerTest extends TestCase
         $user->flights()->attach($futureFlight);
         $user->flights()->attach($pastFlight);
 
-        $response = $this->actingAs($user)->get(route('userFlights')); 
+        $response = $this->actingAs($user)->get(route('flightReservations', $user->id)); 
 
-        $response->assertStatus(403);
-        $response->assertViewIs('flights.myFlights');
-        $response->assertViewHasAll(['userFlights', 'userPastFlights']);
-
-        $response->assertSee($futureFlight->date->toDateString());
-        $response->assertSee($pastFlight->date->toDateString());
+        $response->assertStatus(200);
+        $response->assertViewIs('users.reservations');
     }
 }

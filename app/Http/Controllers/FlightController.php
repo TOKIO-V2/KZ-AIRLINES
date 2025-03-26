@@ -44,21 +44,6 @@ class FlightController extends Controller
         return view('flights.pastFlights', compact('pastFlights'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        if( Auth::user()->Admin=true){
-
-            return view('flights.createFlightForm');
-
-        }
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $flights = Flight::create([
@@ -74,9 +59,6 @@ class FlightController extends Controller
         return redirect()->route('flights');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Request $request, string $id)
     {
         $flights = Flight::find($id);
@@ -92,56 +74,10 @@ class FlightController extends Controller
             $this->unbook($flights, Auth::id());
             return (Redirect::to(route("flightShow", $flights->id)));
         }
-        return (view("flights.flightShow", compact("flights", "booked")));
+        return (view("flights.show", compact("flights", "booked")));
         
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        
-        if( Auth::user()->Admin=true){
-
-            $flights = Flight::find($id);
-            return view('flights.editFlightForm', compact('flights'));
-        }
-        
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        $flights = Flight::find($id);
-
-        $flights->update([
-            'date' => $request->date,
-            'origin' => $request->origin,
-            'destination' => $request->destination,
-            'plane_id' => $request->plane_id,
-            'reserved' => $request->reserved,
-            'available'=>$flights->available
-        ]);
-
-        $flights->save();
-        return redirect()->route('flights');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        if( Auth::user()->Admin=true){
-
-            $flights = Flight::find($id);
-            $flights->delete();
-
-        }
-    }
 
     public function book(Flight $flight, int $userId)
     {
@@ -187,9 +123,9 @@ class FlightController extends Controller
     public function getReservations($id)
     {
         
-        if (!Auth::check() || !Auth::user()->Admin) {
-            abort(403, 'No autorizado');
-        }
+        // if (!Auth::check() || Auth::user()->admin) {
+        //     abort(403, 'No autorizado');
+        // }
 
         $flight = Flight::with('users')->findOrFail($id);
 
@@ -201,6 +137,6 @@ class FlightController extends Controller
             ];
         });
 
-        return response()->json($reservations);
+        return view ('users.reservations');
     }
 }

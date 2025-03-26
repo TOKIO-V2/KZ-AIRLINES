@@ -16,7 +16,7 @@ class HomeControllerTest extends TestCase
 
         $response = $this->actingAs($user)->get(route('flights'));
 
-        $response->assertStatus(500) 
+        $response->assertStatus(200) 
                  ->assertViewIs('flights.flights');
     }
 }

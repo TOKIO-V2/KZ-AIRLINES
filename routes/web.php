@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PlaneController;
 use App\Http\Controllers\FlightController;
+use App\Http\Middleware\BookingAllowed;
 
 Auth::routes();
 
@@ -20,7 +21,7 @@ Route::get('/flights/{id}', [FlightController::class, 'edit'])->middleware('auth
 Route::post('/flights/update/{id}', [FlightController::class, 'update'])->middleware('auth:web', Admin::class.':web')->name('flightUpdate');
 Route::delete('/flights/destroy/{id}', [FlightController::class, 'destroy'])->middleware('auth:web', Admin::class.':web')->name('flightDestroy');
 Route::get('/flights/show/{id}',[FlightController::class, 'show'])->name('flightShow');
-Route::get('/flights/{id}/reservations', [FlightController::class, 'getReservations'])->middleware('auth:web', Admin::class.':web');
+Route::get('/flights/{id}/reservations', [FlightController::class, 'getReservations'])->middleware('auth:web', BookingAllowed::class.':flights')->name('flightReservations');
 
 
 Route::get('/planes', [PlaneController::class, 'index'])->middleware('auth:web', Admin::class.':web')->name('planes');

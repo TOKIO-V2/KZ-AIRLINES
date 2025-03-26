@@ -104,7 +104,7 @@ class AuthControllerTest extends TestCase
             "email" => "test@test.com",
             "password" => "12345678",
         ]);
-        $response->assertStatus(500)->assertJsonStructure(["access_token", "token_type", "expires_in"]);
+        $response->assertStatus(200)->assertJsonStructure(["access_token", "token_type", "expires_in"]);
     }
 
     public function test_badLoginApiUser(): void
@@ -174,6 +174,6 @@ class AuthControllerTest extends TestCase
         $token = auth("api")->attempt($credentials);
         $response = $this->withHeaders(["Authentication" => "Bearer ".$token])->post("/api/auth/logout");
 
-        $response->assertStatus(500)->assertJsonFragment(["message" => "Successfully logged out"]);
+        $response->assertStatus(200)->assertJsonFragment(["message" => "Successfully logged out"]);
     }
 }

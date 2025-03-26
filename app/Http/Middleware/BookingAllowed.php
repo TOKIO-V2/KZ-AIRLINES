@@ -17,7 +17,7 @@ class BookingAllowed
      */
     public function handle(Request $request, Closure $next, string $route): Response
     {
-        if ((!Auth::check() || Auth::user()->admin) && $request->action)
+        if ((!Auth::check() || Auth::user()->admin))
         {
             return Redirect::to(route($route));
         }
