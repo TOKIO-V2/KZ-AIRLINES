@@ -3,22 +3,21 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\planeModel;
+use App\Models\Plane;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
 class PlaneController extends Controller
 {
     public function index()
     {
-        $planes = planeModel::all();
+        $planes = Plane::all();
 
         return response()->json($planes, 200);
     }
 
     public function store(Request $request)
     {
-        $plane = planeModel::create([
+        $plane = Plane::create([
             'name' => $request->name,
             'max_capacity' => $request->max_capacity
         ]);
@@ -29,14 +28,14 @@ class PlaneController extends Controller
     }
     public function show(string $id)
     {
-        $plane = planeModel::findOrFail($id);
+        $plane = Plane::findOrFail($id);
 
         return response()->json($plane, 200);
     }
 
     public function update(Request $request, string $id)
     {
-        $plane = planeModel::findOrFail($id);
+        $plane = Plane::findOrFail($id);
 
         $plane->update([
             'name' => $request->name,
@@ -50,7 +49,7 @@ class PlaneController extends Controller
 
     public function destroy(string $id)
     {
-        $plane = planeModel::findOrFail($id);
+        $plane = Plane::findOrFail($id);
         $plane->delete();
     }
 }

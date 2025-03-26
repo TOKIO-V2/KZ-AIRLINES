@@ -18,7 +18,7 @@ class Admin
     {
         if (auth($guard)->user()->admin == 0)
         {
-            return response()->json(["message" => "User is not an administrator"], 401);
+            return response()->json(["message" => "User is not an administrator"], 400);
         }
         return $next($request);
     }

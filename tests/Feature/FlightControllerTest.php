@@ -4,8 +4,8 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use App\Models\User;
-use App\Models\flightModel;
-use App\Models\planeModel;
+use App\Models\Flight;
+use App\Models\Plane;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -16,9 +16,9 @@ class FlightControllerTest extends TestCase
     public function test_if_index_shows_future_flights()
     {
         $admin = User::factory()->create(['Admin' => true]);
-        $plane = planeModel::factory()->create();
+        $plane = Plane::factory()->create();
 
-        flightModel::factory()->count(2)->create([
+        Flight::factory()->count(2)->create([
             'plane_id' => $plane->id,
             'date' => now()->addDays(3),
         ]);
@@ -42,7 +42,7 @@ class FlightControllerTest extends TestCase
     public function test_if_store_creates_new_flight()
     {
         $admin = User::factory()->create(['Admin' => true]);
-        $plane = planeModel::factory()->create();
+        $plane = Plane::factory()->create();
 
         $data = [
             'date' => now()->addDays(10),
@@ -66,8 +66,8 @@ class FlightControllerTest extends TestCase
     public function test_if_show_displays_flight()
     {
         $user = User::factory()->create();
-        $plane = planeModel::factory()->create();
-        $flight = flightModel::factory()->create(['plane_id' => $plane->id]);
+        $plane = Plane::factory()->create();
+        $flight = Flight::factory()->create(['plane_id' => $plane->id]);
 
         $this->actingAs($user)
             ->get(route('flightShow', $flight->id))
@@ -79,8 +79,8 @@ class FlightControllerTest extends TestCase
     public function test_if_edit_shows_edit_form_for_admin()
     {
         $admin = User::factory()->create(['Admin' => true]);
-        $plane = planeModel::factory()->create();
-        $flight = flightModel::factory()->create(['plane_id' => $plane->id]);
+        $plane = Plane::factory()->create();
+        $flight = Flight::factory()->create(['plane_id' => $plane->id]);
 
         $this->actingAs($admin)
             ->get(route('editFlightForm', $flight->id))
@@ -91,8 +91,8 @@ class FlightControllerTest extends TestCase
     public function test_if_update_changes_flight_data()
     {
         $admin = User::factory()->create(['Admin' => true]);
-        $plane = planeModel::factory()->create();
-        $flight = flightModel::factory()->create(['plane_id' => $plane->id]);
+        $plane = Plane::factory()->create();
+        $flight = Flight::factory()->create(['plane_id' => $plane->id]);
 
         $data = [
             'date' => now()->addDays(5),
@@ -115,8 +115,8 @@ class FlightControllerTest extends TestCase
     public function test_if_destroy_deletes_flight()
     {
         $admin = User::factory()->create(['Admin' => true]);
-        $plane = planeModel::factory()->create();
-        $flight = flightModel::factory()->create(['plane_id' => $plane->id]);
+        $plane = Plane::factory()->create();
+        $flight = Flight::factory()->create(['plane_id' => $plane->id]);
 
         $this->actingAs($admin)
             ->get(route('flights', ['action' => 'delete', 'id' => $flight->id]))
@@ -128,8 +128,8 @@ class FlightControllerTest extends TestCase
     public function test_if_past_flights_updates_reserved_and_returns_view()
     {
         $admin = User::factory()->create(['Admin' => true]);
-        $plane = planeModel::factory()->create(['max_capacity' => 200]);
-        $flight = flightModel::factory()->create([
+        $plane = Plane::factory()->create(['max_capacity' => 200]);
+        $flight = Flight::factory()->create([
             'date' => now()->subDays(3),
             'reserved' => 0,
             'plane_id' => $plane->id
@@ -147,8 +147,8 @@ class FlightControllerTest extends TestCase
     public function test_if_flight_can_be_booked_and_unbooked()
     {
         $user = User::factory()->create();
-        $plane = planeModel::factory()->create(['max_capacity' => 2]);
-        $flight = flightModel::factory()->create([
+        $plane = Plane::factory()->create(['max_capacity' => 2]);
+        $flight = Flight::factory()->create([
             'plane_id' => $plane->id,
             'reserved' => 0
         ]);
@@ -175,8 +175,8 @@ class FlightControllerTest extends TestCase
     public function test_if_get_reservations_returns_json_for_admin()
     {
         $admin = User::factory()->create(['Admin' => true]);
-        $plane = planeModel::factory()->create();
-        $flight = flightModel::factory()->create(['plane_id' => $plane->id]);
+        $plane = Plane::factory()->create();
+        $flight = Flight::factory()->create(['plane_id' => $plane->id]);
         $user = User::factory()->create();
         $flight->users()->attach($user->id);
 
@@ -193,8 +193,8 @@ class FlightControllerTest extends TestCase
     public function test_if_non_admin_cannot_delete_flight()
     {
         $user = User::factory()->create(['Admin' => false]);
-        $plane = planeModel::factory()->create();
-        $flight = flightModel::factory()->create(['plane_id' => $plane->id]);
+        $plane = Plane::factory()->create();
+        $flight = Flight::factory()->create(['plane_id' => $plane->id]);
 
         $this->actingAs($user)
             ->delete(route('flightDestroy', $flight->id))
@@ -206,8 +206,8 @@ class FlightControllerTest extends TestCase
     public function test_if_booking_fails_when_flight_is_full()
     {
         $user = User::factory()->create();
-        $plane = planeModel::factory()->create(['max_capacity' => 1]);
-        $flight = flightModel::factory()->create([
+        $plane = Plane::factory()->create(['max_capacity' => 1]);
+        $flight = Flight::factory()->create([
             'plane_id' => $plane->id,
             'reserved' => 1
         ]);
@@ -225,8 +225,8 @@ class FlightControllerTest extends TestCase
     public function test_if_unbook_does_nothing_when_reserved_is_zero()
     {
         $user = User::factory()->create();
-        $plane = planeModel::factory()->create();
-        $flight = flightModel::factory()->create([
+        $plane = Plane::factory()->create();
+        $flight = Flight::factory()->create([
             'plane_id' => $plane->id,
             'reserved' => 0
         ]);
@@ -248,8 +248,8 @@ class FlightControllerTest extends TestCase
     public function test_if_non_admin_cannot_access_get_reservations()
     {
         $user = User::factory()->create(['Admin' => false]);
-        $plane = planeModel::factory()->create();
-        $flight = flightModel::factory()->create(['plane_id' => $plane->id]);
+        $plane = Plane::factory()->create();
+        $flight = Flight::factory()->create(['plane_id' => $plane->id]);
 
         $this->actingAs($user)
             ->get(route('flightReservations', $flight->id))
@@ -258,8 +258,8 @@ class FlightControllerTest extends TestCase
 
     public function test_if_guest_cannot_access_get_reservations()
     {
-        $plane = planeModel::factory()->create();
-        $flight = flightModel::factory()->create(['plane_id' => $plane->id]);
+        $plane = Plane::factory()->create();
+        $flight = Flight::factory()->create(['plane_id' => $plane->id]);
 
         $this->get(route('flightReservations', $flight->id))
             ->assertRedirect('/');
@@ -268,8 +268,8 @@ class FlightControllerTest extends TestCase
     public function test_if_admin_can_delete_past_flight_from_action_param()
     {
         $admin = User::factory()->create(['Admin' => true]);
-        $plane = planeModel::factory()->create();
-        $flight = flightModel::factory()->create([
+        $plane = Plane::factory()->create();
+        $flight = Flight::factory()->create([
             'plane_id' => $plane->id,
             'date' => now()->subDays(5),
         ]);
@@ -284,8 +284,8 @@ class FlightControllerTest extends TestCase
     public function test_if_user_can_book_flight_with_available_capacity()
     {
         $user = User::factory()->create();
-        $plane = planeModel::factory()->create(['max_capacity' => 2]);
-        $flight = flightModel::factory()->create([
+        $plane = Plane::factory()->create(['max_capacity' => 2]);
+        $flight = Flight::factory()->create([
             'plane_id' => $plane->id,
             'reserved' => 1,
             'aviable' => 0
@@ -306,8 +306,8 @@ class FlightControllerTest extends TestCase
     public function test_if_get_reservations_returns_valid_json()
     {
         $admin = User::factory()->create(['Admin' => true]);
-        $plane = planeModel::factory()->create();
-        $flight = flightModel::factory()->create(['plane_id' => $plane->id]);
+        $plane = Plane::factory()->create();
+        $flight = Flight::factory()->create(['plane_id' => $plane->id]);
         $user = User::factory()->create();
         $flight->users()->attach($user->id);
 
@@ -332,8 +332,8 @@ class FlightControllerTest extends TestCase
     public function test_if_non_admin_get_reservations_aborts_with_403()
     {
         $user = User::factory()->create(['Admin' => false]);
-        $plane = planeModel::factory()->create();
-        $flight = flightModel::factory()->create(['plane_id' => $plane->id]);
+        $plane = Plane::factory()->create();
+        $flight = flight::factory()->create(['plane_id' => $plane->id]);
     
         $this->actingAs($user)
             ->get(route('flightReservations', $flight->id))
@@ -344,8 +344,8 @@ class FlightControllerTest extends TestCase
     public function test_if_admin_get_reservations_returns_json_correctly()
     {
         $admin = User::factory()->create(['Admin' => true]);
-        $plane = planeModel::factory()->create();
-        $flight = flightModel::factory()->create(['plane_id' => $plane->id]);
+        $plane = Plane::factory()->create();
+        $flight = Flight::factory()->create(['plane_id' => $plane->id]);
         $user = User::factory()->create();
         $flight->users()->attach($user->id);
 

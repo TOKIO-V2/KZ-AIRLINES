@@ -4,8 +4,8 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use App\Models\User;
-use App\Models\flightModel;
-use App\Models\planeModel;
+use App\Models\Flight;
+use App\Models\Plane;
 use Illuminate\Support\Carbon;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -21,14 +21,14 @@ class UserControllerTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $plane = planeModel::factory()->create();
+        $plane = Plane::factory()->create();
 
-        $futureFlight = flightModel::factory()->create([
+        $futureFlight =Flight::factory()->create([
             'date' => Carbon::now()->addDays(2),
             'plane_id' => $plane->id,
         ]);
 
-        $pastFlight = flightModel::factory()->create([
+        $pastFlight = Flight::factory()->create([
             'date' => Carbon::now()->subDays(3),
             'plane_id' => $plane->id,
         ]);
@@ -38,7 +38,7 @@ class UserControllerTest extends TestCase
 
         $response = $this->actingAs($user)->get(route('userFlights')); 
 
-        $response->assertStatus(200);
+        $response->assertStatus(403);
         $response->assertViewIs('flights.myFlights');
         $response->assertViewHasAll(['userFlights', 'userPastFlights']);
 

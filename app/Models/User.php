@@ -31,7 +31,7 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
-        'isAdmin'
+        'Admin'
     ];
 
     /**
@@ -79,6 +79,6 @@ class User extends Authenticatable implements JWTSubject
 
     public function flights(): BelongsToMany
     {
-        return $this->belongsToMany(flightModel::class, "flight_user");
+        return $this->belongsToMany(Flight::class, "Bookings");
     }
 }

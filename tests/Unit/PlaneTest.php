@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use App\Models\planeModel;
+use App\Models\Plane;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PlaneTest extends TestCase
@@ -12,7 +12,7 @@ class PlaneTest extends TestCase
 
     public function test_it_can_create_a_plane()
     {
-        $planes = planeModel::create([
+        $planes = Plane::create([
             'name' => 'Boeing 737',
             'max_capacity' => 160,
         ]);
@@ -25,7 +25,7 @@ class PlaneTest extends TestCase
 
     public function test_it_can_update_a_plane()
     {
-        $planes = planeModel::create([
+        $planes = Plane::create([
             'name' => 'Boeing 737',
             'max_capacity' => 160,
         ]);
@@ -40,7 +40,7 @@ class PlaneTest extends TestCase
 
     public function test_it_can_delete_a_plane()
     {
-        $planes = planeModel::create([
+        $planes = Plane::create([
             'name' => 'Boeing 737',
             'max_capacity' => 160,
         ]);

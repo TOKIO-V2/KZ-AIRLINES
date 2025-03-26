@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\planeModel;
+use App\Models\Plane;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,7 +18,7 @@ class PlaneController extends Controller
             return redirect()->route('planes');
         }
 
-        $planes = planeModel::All();
+        $planes = Plane::All();
 
         return view('planes.planes', compact('planes'));
     }
@@ -40,7 +40,7 @@ class PlaneController extends Controller
      */
     public function store(Request $request)
     {
-        $plane = planeModel::create([
+        $plane = Plane::create([
             'name' => $request->name,
             'max_capacity' => $request->max_capacity,
         ]);
@@ -54,7 +54,7 @@ class PlaneController extends Controller
      */
     public function show(string $id)
     {
-        $plane = planeModel::findOrFail($id);
+        $plane = Plane::findOrFail($id);
         return view('planes.planeShow', compact('plane'));
     }
 
@@ -65,7 +65,7 @@ class PlaneController extends Controller
     {
         if( Auth::user()->Admin=true){
 
-            $plane = planeModel::find($id);
+            $plane = Plane::find($id);
             return view('planes.editPlaneForm', compact('plane'));
         }
         
@@ -76,7 +76,7 @@ class PlaneController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $plane = planeModel::find($id);
+        $plane = Plane::find($id);
 
         $plane->update([
             'name' => $request->name,
@@ -94,7 +94,7 @@ class PlaneController extends Controller
     {
         if( Auth::user()->Admin=true){
 
-            $plane = planeModel::find($id);
+            $plane = Plane::find($id);
             $plane->delete();
 
         }
