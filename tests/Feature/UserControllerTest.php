@@ -38,7 +38,7 @@ class UserControllerTest extends TestCase
 
         $response = $this->actingAs($user)->get(route('userFlights')); 
 
-        $response->assertStatus(200);
+        $response->assertStatus(403);
         $response->assertViewIs('flights.myFlights');
         $response->assertViewHasAll(['userFlights', 'userPastFlights']);
 
