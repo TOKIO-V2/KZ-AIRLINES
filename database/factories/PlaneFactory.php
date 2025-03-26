@@ -3,22 +3,17 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Plane;   
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
- */
 class PlaneFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
+    protected $model = Plane::class;
+
+    public function definition()
     {
         return [
-            "name" => fake()->word(),
-            "max_capacity" => fake()->numberBetween(100, 160),
+            "name" => $this->faker->word(),
+            "max_capacity" => $this->faker->numberBetween(100, 300),
         ];
     }
 }

@@ -23,6 +23,6 @@ class bookingModel extends Model
     // Relación con el vuelo (una reserva pertenece a un vuelo)
     public function flight()
     {
-        return $this->belongsTo(flightModel::class);
+        return $this->belongsTo(Flight::class);
     }
 }

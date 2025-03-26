@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\flightModel;
+use App\Models\Flight;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class FlightController extends Controller
 {
     public function index()
     {
-        $flights = flightModel::all();
+        $flights = Flight::all();
 
         return response()->json($flights, 200);
     }
 
     public function store(Request $request)
     {
-        $flight = flightModel::create([
+        $flight = Flight::create([
             'date' => $request->date,
             'origin' => $request->origin,
             'destination' => $request->destination,
@@ -32,14 +33,14 @@ class FlightController extends Controller
     }
     public function show(string $id)
     {
-        $flight = flightModel::findOrFail($id);
+        $flight = Flight::findOrFail($id);
 
         return response()->json($flight, 200);
     }
 
     public function update(Request $request, string $id)
     {
-        $flight = flightModel::findOrFail($id);
+        $flight = Flight::findOrFail($id);
 
         $flight->update([
             'date' => $request->date,
@@ -57,7 +58,7 @@ class FlightController extends Controller
 
     public function destroy(string $id)
     {
-        $flight = flightModel::findOrFail($id);
+        $flight = Flight::findOrFail($id);
         $flight->delete();
     }
 }

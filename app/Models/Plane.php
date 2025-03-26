@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class planeModel extends Model
+class Plane extends Model
 {
     use HasFactory;
 
@@ -18,6 +16,6 @@ class planeModel extends Model
     ];
     public function flights(): HasMany
     {
-        return $this->hasMany(flightModel::class);
+        return $this->hasMany(Flight::class);
     }
 }

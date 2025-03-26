@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\flightModel;
+use App\Models\Flight;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -19,7 +19,7 @@ class FlightController extends Controller
             return redirect()->route('flights');
         }
 
-        $flights = flightModel::where('date', '>=', now())->orderBy('date', 'desc')->get();
+        $flights = Flight::where('date', '>=', now())->orderBy('date', 'desc')->get();
 
         return view('flights.flights', compact('flights'));
     }
@@ -31,7 +31,7 @@ class FlightController extends Controller
             return redirect()->route('pastFlights');
         }
 
-        $pastFlights = flightModel::where('date', '<', now())->orderBy('date', 'desc')->get();
+        $pastFlights = Flight::where('date', '<', now())->orderBy('date', 'desc')->get();
 
         foreach($pastFlights as $flight){
             $flight->update(
@@ -61,7 +61,7 @@ class FlightController extends Controller
      */
     public function store(Request $request)
     {
-        $flights = flightModel::create([
+        $flights = Flight::create([
             'date' => $request->date,
             'origin' => $request->origin,
             'destination' => $request->destination,
@@ -79,7 +79,7 @@ class FlightController extends Controller
      */
     public function show(Request $request, string $id)
     {
-        $flights = flightModel::find($id);
+        $flights = Flight::find($id);
         $booked = count($flights->users()->where("user_id", Auth::id())->get());
 
         if ($request->action === "book" && !$booked)
@@ -104,7 +104,7 @@ class FlightController extends Controller
         
         if( Auth::user()->Admin=true){
 
-            $flights = flightModel::find($id);
+            $flights = Flight::find($id);
             return view('flights.editFlightForm', compact('flights'));
         }
         
@@ -115,7 +115,7 @@ class FlightController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $flights = flightModel::find($id);
+        $flights = Flight::find($id);
 
         $flights->update([
             'date' => $request->date,
@@ -137,13 +137,13 @@ class FlightController extends Controller
     {
         if( Auth::user()->Admin=true){
 
-            $flights = flightModel::find($id);
+            $flights = Flight::find($id);
             $flights->delete();
 
         }
     }
 
-    public function book(flightModel $flight, int $userId)
+    public function book(Flight $flight, int $userId)
     {
         if ($flight->reserved == $flight->plane->max_capacity)
         {
@@ -165,7 +165,7 @@ class FlightController extends Controller
         }
     }
 
-    public function unbook(flightModel $flight, int $userId)
+    public function unbook(Flight $flight, int $userId)
     {
         if ($flight->reserved == 0) {
             return;
@@ -191,7 +191,7 @@ class FlightController extends Controller
             abort(403, 'No autorizado');
         }
 
-        $flight = flightModel::with('users')->findOrFail($id);
+        $flight = Flight::with('users')->findOrFail($id);
 
         $reservations = $flight->users->map(function($user) {
             return [

@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use App\Models\User;
-use App\Models\planeModel;
+use App\Models\Plane;
 use Database\Factories\PlaneFactory;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -53,7 +53,7 @@ class PlaneControllerTest extends TestCase
     public function test_if_show_displays_plane_info()
     {
         $user = User::factory()->create(['Admin' => true]);
-        $plane = planeModel::factory()->create();
+        $plane = Plane::factory()->create();
     
         $this->actingAs($user)
             ->get(route('planeShow', $plane->id))
@@ -67,7 +67,7 @@ class PlaneControllerTest extends TestCase
     public function test_if_edit_shows_edit_form_for_admin()
     {
         $admin = User::factory()->create(['Admin' => true]);
-        $plane = planeModel::factory()->create();
+        $plane = Plane::factory()->create();
 
         $this->actingAs($admin)
             ->get(route('editPlaneForm', $plane->id))
@@ -79,7 +79,7 @@ class PlaneControllerTest extends TestCase
     public function test_if_update_changes_plane_data()
     {
         $admin = User::factory()->create(['Admin' => true]);
-        $plane = planeModel::factory()->create();
+        $plane = Plane::factory()->create();
 
         $data = [
             'name' => 'Updated Plane',
@@ -96,7 +96,7 @@ class PlaneControllerTest extends TestCase
     public function test_if_destroy_deletes_plane()
     {
         $admin = User::factory()->create(['Admin' => true]);
-        $plane = planeModel::factory()->create();
+        $plane = Plane::factory()->create();
 
         $this->actingAs($admin)
             ->get(route('planes', ['action' => 'delete', 'id' => $plane->id]))
