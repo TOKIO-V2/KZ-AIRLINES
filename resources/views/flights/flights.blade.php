@@ -35,7 +35,7 @@
                 <tbody>
                     @foreach ($flights as $flight)
                         <tr class="row" id="{{ $flight->id }}">
-                            @if (Auth::check() && Auth::user()->isAdmin)
+                            @if (Auth::check() && Auth::user()->Admin)
                                 <td>{{ $flight->id }}</td>
                                 <td>{{ $flight->plane_id }}</td>
                             @endif
