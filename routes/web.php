@@ -6,13 +6,18 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PlaneController;
 use App\Http\Controllers\FlightController;
+use App\Http\Controllers\HomeController;
+
+
+Route::get('/', function () {
+    return view('home');
+});
 
 Auth::routes();
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::get('/flights/myFlights',[UserController::class, 'index'])->middleware('auth:web', Admin::class.':web')->name('userFlights');
-
-
-Route::get('/', [FlightController::class, 'index'])->name('flights');
+Route::get('/flights', [FlightController::class, 'index'])->name('flights');
 Route::get('/flights/past', [FlightController::class, 'pastFlights'])->name('pastFlights');
 Route::get('/flights/create', [FlightController::class, 'create'])->middleware('auth:web', Admin::class.':web')->name('createFlightForm');
 Route::post('/flights/store', [FlightController::class, 'store'])->middleware('auth:web', Admin::class.':web')->name('flightStore');
@@ -20,7 +25,7 @@ Route::get('/flights/{id}', [FlightController::class, 'edit'])->middleware('auth
 Route::post('/flights/update/{id}', [FlightController::class, 'update'])->middleware('auth:web', Admin::class.':web')->name('flightUpdate');
 Route::delete('/flights/destroy/{id}', [FlightController::class, 'destroy'])->middleware('auth:web', Admin::class.':web')->name('flightDestroy');
 Route::get('/flights/show/{id}',[FlightController::class, 'show'])->name('flightShow');
-Route::get('/flights/{id}/reservations', [FlightController::class, 'getReservations'])->middleware('auth:web', Admin::class.':web');
+Route::get('/flights/{id}/reservations', [FlightController::class, 'getReservations'])->middleware('auth:web', Admin::class.':web')->name('userReservations');
 
 
 Route::get('/planes', [PlaneController::class, 'index'])->middleware('auth:web', Admin::class.':web')->name('planes');
