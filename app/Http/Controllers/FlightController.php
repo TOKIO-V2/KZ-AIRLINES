@@ -19,8 +19,7 @@ class FlightController extends Controller
             return redirect()->route('flights');
         }
 
-        $flights = Flight::where('date', '>=', now())->orderBy('date', 'desc')->get();
-
+        $flights = Flight::where('date', '>=', now())->orderBy('date', 'asc')->get(); 
         return view('flights.flights', compact('flights'));
     }
 

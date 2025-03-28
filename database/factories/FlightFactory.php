@@ -19,7 +19,7 @@ class FlightFactory extends Factory
             "origin" => fake()->country(),
             "plane_id" => fake()->randomDigitNot(0),
             "reserved" => 0,
-            "available"=>fake()->numberBetween(1, 200)
+            "available"=>fake()->boolean()
         ];
     }
 }
