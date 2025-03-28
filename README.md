@@ -151,4 +151,4 @@ php artisan test --coverage-html=coverage-report
 __Alberto Hernández Galeote, Backend and Frontend Developer.__
 
 [![Github](https://skillicons.dev/icons?i=github)](https://github.com/TOKIO-V2/)
-[![Linkedin](https://skillicons.dev/icons?i=linkedin)](www.linkedin.com/in/albertohernandezgaleote)
+[![Linkedin](https://skillicons.dev/icons?i=linkedin)](https://www.linkedin.com/in/alberto-hern%C3%A1ndez-galeote/)
