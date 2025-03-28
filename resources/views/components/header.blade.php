@@ -23,10 +23,11 @@
                         <div class="dropdown">
                             <img src="{{ asset('img/icon.png') }}" alt="Profile" class="profile-pic">
                             <div class="dropdown-content">
-                                @if(Auth::check() && !Auth::user()->isAdmin)
+                                @if(Auth::check() && !Auth::user()->Admin)
+                                    <a href="/flightReservations">Reservations</a>
                                 
                                 @endif
-                                @if(Auth::check() && Auth::user()->isAdmin)
+                                @if(Auth::check() && Auth::user()->Admin)
                                     <a href="/listAircraftAdmin">Aviones</a>
                                     <a href="/flightList">Vuelos</a>
                                 @endif

@@ -3,58 +3,28 @@
 @section('content')
     <div class="body">
 
-        @if (Auth::check() && Auth::user()->Admin)
-            <div class="addBtn" id="flightAdd">
-                <a href="{{ route('createFlightForm') }}" class="crudBtn">
-                    <img src="{{ asset('img/add.png') }}" alt="add-Button" class="add">
-                </a>
-            </div>
-        @endif
-
-        <div class="tableFlight">
-            <h2 class="table-title">New Flights List</h2>
-            <table class="table">
-                <thead>
-                    <tr>
-                        @if (Auth::check() && Auth::user()->Admin)
-                            <th>Id</th>
-                            <th>Plane ID</th>
-                        @endif
-                        <th>Date</th>
-                        <th>Origin</th>
-                        <th>Destination</th>
-                        <th>Total Places</th>
-                        <th>Places Reserved</th>
-                        <th>Availability</th>
-                        @if (Auth::check() && Auth::user()->Admin)
-                            <th>Actions</th>
-                        @endif
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($flights as $flight)
-                        <tr class="row" id="{{ $flight->id }}">
-                            @if (Auth::check() && Auth::user()->Admin)
-                                <td>{{ $flight->id }}</td>
-                                <td>{{ $flight->plane_id }}</td>
-                            @endif
-                            <td>{{ $flight->date }}</td>
-                            <td>{{ $flight->origin }}</td>
-                            <td>{{ $flight->destination }}</td>
-                            <td>{{ $flight->plane->max_capacity }}</td>
-                            <td>{{ $flight->reserved }}</td>
-                            <td>{{ $flight->plane->max_capacity - $flight->reserved }}</td>
-                            <td>
-                                @if ($flight->reserved >= 0 && $flight->reserved < $flight->plane->max_capacity)
-                                    <span class="active">Available</span>
-                                @else
-                                    <span class="inactive">Not Available</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+        <div class="flights-container">
+            <h2 class="table-title">Flights List</h2>
+            @foreach ($flights as $flight)
+                <div class="flight-card" id="{{ $flight->id }}">
+                    <div class="flight-row">
+                        <div class="flight-origin">
+                            {{ $flight->origin }}
+                        </div>
+                        <div class="flight-destination">
+                            {{ $flight->destination }}
+                        </div>
+                        <div class="flight-date">
+                            {{ $flight->date }}
+                        </div>
+                        <div class="flight-seats">
+                            seats: {{ $flight->reserved }}/{{ $flight->plane->max_capacity }}
+                        </div>
+                        <div class="flight-price">
+                        </div>
+                    </div>
+                </div>
+            @endforeach
         </div>
     </div>
 
@@ -71,7 +41,7 @@
                     </tr>
                 </thead>
                 <tbody>
-
+                    {{-- Aquí puedes añadir los datos de los usuarios reservados --}}
                 </tbody>
             </table>
         </div>
