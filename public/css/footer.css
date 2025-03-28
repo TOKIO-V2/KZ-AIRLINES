@@ -1,44 +1,25 @@
-.footer {
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    text-align: center;
-    padding: 20px;
-}
-.footer a {
-    color:var(--gh-color);
-    text-decoration: none;
-}
-.footer a:hover {
-    color: var(--gh-color-hover);
-}
-
-.footer-links{
-    display: none;
+footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    background-color: white;
+    padding: 10px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    
+    z-index: 1000; 
 }
 
-@media (max-width: 768px) {
-    .footer-links {
-        display: flex;
-        flex-direction: row; 
-        justify-content: center;
-        gap: 15px; 
-        margin-top: 15px;
-        flex-wrap: wrap; 
-    }
 
-    .footer-links a {
-        display: inline-block;
-        padding: 10px 20px;
-        font-size: 1.2rem;
-        color: var(--gh-color);
-        text-decoration: none;
-        border-radius: 10px;
-        background-color: var(--primary-color);
-        border: 1px solid var(--gh-color);
-    }
+.logo-git {
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+}
 
-    .footer-links a:hover {
-        color: var(--gh-color-hover);
-        background-color: rgba(255, 255, 255, 0.1);
-    }
+.logo-git:hover {
+    transform: scale(1.2);
 }

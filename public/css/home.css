@@ -1,0 +1,62 @@
+
+.container-home {
+    min-height: 80vh;  
+    background: url('/img/fondoHome.png') center/cover no-repeat;
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    color: white;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.container-title {
+    text-align: left;
+    padding-top: 20vh; 
+}
+
+.container-title h1 {
+    font-size: 6rem;
+    font-weight: bold;
+    color: var(--darkAquamarine);
+}
+
+.container-title h2 {
+    font-size: 5rem;
+    font-weight: bold;
+    color: var(--darkAquamarine);
+}
+
+.container-title p {
+    font-size: 1.2rem;
+    margin: 10px 0;
+    color: var(--aquamarine);
+}
+
+.container-button {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.btn-home {
+    padding: 10px 20px;
+    font-size: 1.5rem;
+    border: none;
+    background-color: #AC3650;
+    margin-top: 35px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s;
+    text-decoration: none;
+    font-family: 'Times New Roman', Times, serif;
+    color: white;
+}
+
+.btn-home:hover {
+    background-color: rgb(145, 48, 48);
+}
