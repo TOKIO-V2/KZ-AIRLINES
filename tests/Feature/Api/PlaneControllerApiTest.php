@@ -28,7 +28,7 @@ class PlaneControllerApiTest extends TestCase
             'max_capacity' => 120,
         ];
 
-        $response = $this->postJson('/api/planes', $planeData);
+        $response = $this->post('/api/planes/store', $planeData);
 
         $response->assertStatus(200)
                  ->assertJsonFragment($planeData);
@@ -40,7 +40,7 @@ class PlaneControllerApiTest extends TestCase
     {
         $plane = Plane::factory()->create();
 
-        $response = $this->getJson("/api/planes/{$plane->id}");
+        $response = $this->getJson("/api/planes/show/{$plane->id}");
 
         $response->assertStatus(200)
                  ->assertJsonFragment([
@@ -58,7 +58,7 @@ class PlaneControllerApiTest extends TestCase
             'max_capacity' => 180,
         ];
 
-        $response = $this->putJson("/api/planes/{$plane->id}", $updatedData);
+        $response = $this->putJson("/api/planes/update/{$plane->id}", $updatedData);
 
         $response->assertStatus(200)
                  ->assertJsonFragment($updatedData);
@@ -70,7 +70,7 @@ class PlaneControllerApiTest extends TestCase
     {
         $plane = Plane::factory()->create();
 
-        $response = $this->deleteJson("/api/planes/{$plane->id}");
+        $response = $this->deleteJson("/api/planes/destroy/{$plane->id}");
 
         $response->assertStatus(200);
         
