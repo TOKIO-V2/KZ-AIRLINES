@@ -47,7 +47,7 @@
     padding: 10px 20px;
     font-size: 1.5rem;
     border: none;
-    background-color: blue;
+    background-color: #AC3650;
     margin-top: 35px;
     cursor: pointer;
     border-radius: 5px;
@@ -58,5 +58,5 @@
 }
 
 .btn-home:hover {
-    background-color: rgb(125, 125, 255);
+    background-color: rgb(145, 48, 48);
 }

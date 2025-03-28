@@ -3,7 +3,7 @@
 @section('content')
     <div class="body">
 
-        @if (Auth::check() && Auth::user()->isAdmin)
+        @if (Auth::check() && Auth::user()->Admin)
             <div class="addBtn" id="flightAdd">
                 <a href="{{ route('createFlightForm') }}" class="crudBtn">
                     <img src="{{ asset('img/add.png') }}" alt="add-Button" class="add">
@@ -16,18 +16,17 @@
             <table class="table">
                 <thead>
                     <tr>
-                        @if (Auth::check() && Auth::user()->isAdmin)
+                        @if (Auth::check() && Auth::user()->Admin)
                             <th>Id</th>
                             <th>Plane ID</th>
                         @endif
                         <th>Date</th>
-                        <th>Departure</th>
-                        <th>Arrival</th>
+                        <th>Origin</th>
+                        <th>Destination</th>
                         <th>Total Places</th>
                         <th>Places Reserved</th>
-                        <th>Disponible Places</th>
                         <th>Availability</th>
-                        @if (Auth::check() && Auth::user()->isAdmin)
+                        @if (Auth::check() && Auth::user()->Admin)
                             <th>Actions</th>
                         @endif
                     </tr>
@@ -40,8 +39,8 @@
                                 <td>{{ $flight->plane_id }}</td>
                             @endif
                             <td>{{ $flight->date }}</td>
-                            <td>{{ $flight->departure }}</td>
-                            <td>{{ $flight->arrival }}</td>
+                            <td>{{ $flight->origin }}</td>
+                            <td>{{ $flight->destination }}</td>
                             <td>{{ $flight->plane->max_capacity }}</td>
                             <td>{{ $flight->reserved }}</td>
                             <td>{{ $flight->plane->max_capacity - $flight->reserved }}</td>
@@ -52,20 +51,6 @@
                                     <span class="inactive">Not Available</span>
                                 @endif
                             </td>
-                            @if (Auth::check() && Auth::user()->isAdmin)
-                                <td>
-                                    <a href="#" class="crudBtn" data-flight-id="{{ $flight->id }}"
-                                        onclick="event.stopPropagation(); openUserReservations({{ $flight->id }});">
-                                        <img src="{{ asset('img/user.png') }}" alt="user-Button" class="crudBtn">
-                                    </a>
-                                    <a href="{{ route('editFlightForm', $flight->id) }}" class="crudBtn">
-                                        <img src="{{ asset('img/edit.png') }}" alt="edit-Button" class="crudBtn">
-                                    </a>
-                                    <a href="?action=delete&id={{ $flight->id }}">
-                                        <img src="{{ asset('img/delete.png') }}" alt="delete-Button" class="crudBtn">
-                                    </a>
-                                </td>
-                            @endif
                         </tr>
                     @endforeach
                 </tbody>
